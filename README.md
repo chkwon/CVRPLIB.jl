@@ -18,7 +18,7 @@ It returns three values. `vrp_file` is the path for the downloaded `.vrp` file a
 `cvrp` is the main data of the following struct:
 
 ```julia
-struct CVRP
+mutable struct CVRP
     name        :: AbstractString
     dimension   :: Integer
     weight_type :: AbstractString
