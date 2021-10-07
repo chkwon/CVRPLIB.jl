@@ -22,6 +22,7 @@ function _generateCVRP(raw::AbstractString)
         coords = parse.(Float64, split(_dict["NODE_COORD_SECTION"]))
         n_r = convert(Integer, length(coords) / dimension)
         coordinates = reshape(coords, (n_r, dimension))'[:, 2:end]
+        # copy depot and create a dummy
         coordinates = [coordinates; coordinates[depot, :]']
         weights = calc_weights(_dict["EDGE_WEIGHT_TYPE"], coordinates)    
     end
@@ -31,8 +32,12 @@ function _generateCVRP(raw::AbstractString)
         n_r = convert(Integer, length(demand_data) / dimension)
         demands_data = reshape(demand_data, (n_r, dimension))'[:, 2:end] 
         demands = dropdims(demands_data, dims=2)
-        @show demands, typeof(demands), size(demands)
+        demands = [demands; demands[depot]]
     end    
+
+    @assert size(weights) == (dimension + 1, dimension +1)
+    @assert size(coordinates) == (dimension + 1, 2)
+    @assert length(demands) == dimension + 1
 
     return CVRP(
         _dict["NAME"],
