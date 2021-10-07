@@ -13,8 +13,14 @@ end
 
 function _generateCVRP(raw::AbstractString)
     _dict = keyextract(raw, cvrp_keys)
+    name = _dict["NAME"]
     dimension = parse(Int, _dict["DIMENSION"])
-    depot = parse.(Int, split(_dict["DEPOT_SECTION"]))[1]
+    if haskey(_dict, "DEPOT_SECTION")
+        depot = parse.(Int, split(_dict["DEPOT_SECTION"]))[1]
+    else
+        depot = 1
+        @warn "$name does not have 'DEPOT_SECTION'"
+    end
     capacity = parse.(Int, _dict["CAPACITY"])
     dummy = dimension + 1
     

@@ -28,6 +28,7 @@ using Downloads
         "EDGE_WEIGHT_FORMAT",
         "EDGE_DATA_FORMAT",
         "CAPACITY",
+        "DISTANCE",
         "NODE_COORD_TYPE",
         "DISPLAY_DATA_TYPE",
         "NODE_COORD_SECTION",
