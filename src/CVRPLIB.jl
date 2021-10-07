@@ -7,7 +7,7 @@ using DataStructures
 using Match
 using Downloads
 
-    struct CVRP
+    mutable struct CVRP
         name        :: AbstractString
         dimension   :: Integer
         weight_type :: AbstractString
