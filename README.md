@@ -1,4 +1,4 @@
-# CVRPLIB
+# CVRPLIB.jl
 
 This downloads and reads data files from [CVRPLIB](http://vrp.atd-lab.inf.puc-rio.br/index.php/en/).  This package is inspired by and built upon [TSPLIB.jl](https://github.com/matago/TSPLIB.jl)
 
