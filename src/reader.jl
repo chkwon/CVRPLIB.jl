@@ -40,11 +40,12 @@ function _generateCVRP(raw::AbstractString)
         else
             nodes = zeros(dimension, 2)
         end
-        display(weights); println()      
+
+        # Expanding weights for dummy depot 
         weights = [weights weights[:, depot]]
-        display(weights); println()
         weights = [weights; weights[depot, :]']
-        display(weights); println()
+
+        # No coordinate information 
         coordinates = Matrix{Float64}(undef, 0, 0)
 
     elseif haskey(_dict, "NODE_COORD_SECTION")
@@ -87,9 +88,6 @@ end
 
 
 function explicit_weights(key::AbstractString, data::Vector{Float64})
-    @show key 
-    @show data 
-
     w = @match key begin
       "UPPER_DIAG_ROW"  => TSPLIB.vec2UDTbyRow(data)
       "LOWER_DIAG_ROW"  => TSPLIB.vec2LDTbyRow(data)
