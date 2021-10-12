@@ -12,26 +12,52 @@ function readCVRPpath(path::AbstractString)
 end 
 
 function _generateCVRP(raw::AbstractString)
-    _dict = keyextract(raw, cvrp_keys)
+    _dict = TSPLIB.keyextract(raw, cvrp_keys)
+
     name = _dict["NAME"]
     dimension = parse(Int, _dict["DIMENSION"])
+    weight_type = _dict["EDGE_WEIGHT_TYPE"]
+
     if haskey(_dict, "DEPOT_SECTION")
         depot = parse.(Int, split(_dict["DEPOT_SECTION"]))[1]
     else
         depot = 1
-        @warn "$name does not have 'DEPOT_SECTION'"
+        @warn "$name does not have 'DEPOT_SECTION'. Depot is set to node 1."
     end
     capacity = parse.(Int, _dict["CAPACITY"])
     dummy = dimension + 1
+    customers = setdiff(1:(dimension+1), [depot, dummy])
     
-    if haskey(_dict, "NODE_COORD_SECTION")
+    if weight_type == "EXPLICIT" && haskey(_dict, "EDGE_WEIGHT_SECTION")
+        explicits = parse.(Float64, split(_dict["EDGE_WEIGHT_SECTION"]))
+        weights = explicit_weights(_dict["EDGE_WEIGHT_FORMAT"], explicits)
+        #Push display data to nodes if possible
+        if haskey(_dict,"DISPLAY_DATA_SECTION")
+            coords = parse.(Float64, split(_dict["DISPLAY_DATA_SECTION"]))
+            n_r = convert(Integer,length(coords)/dimension)
+            nodes = reshape(coords,(n_r,dimension))'[:,2:end]
+            dxp = true
+        else
+            nodes = zeros(dimension, 2)
+        end
+        display(weights); println()      
+        weights = [weights weights[:, depot]]
+        display(weights); println()
+        weights = [weights; weights[depot, :]']
+        display(weights); println()
+        coordinates = Matrix{Float64}(undef, 0, 0)
+
+    elseif haskey(_dict, "NODE_COORD_SECTION")
         coords = parse.(Float64, split(_dict["NODE_COORD_SECTION"]))
         n_r = convert(Integer, length(coords) / dimension)
         coordinates = reshape(coords, (n_r, dimension))'[:, 2:end]
         # copy depot and create a dummy
         coordinates = [coordinates; coordinates[depot, :]']
-        weights = calc_weights(_dict["EDGE_WEIGHT_TYPE"], coordinates)    
+        weights = TSPLIB.calc_weights(_dict["EDGE_WEIGHT_TYPE"], coordinates)    
+        @assert size(coordinates) == (dimension + 1, 2)
     end
+
+    @assert size(weights) == (dimension + 1, dimension +1)
 
     if haskey(_dict, "DEMAND_SECTION")
         demand_data = parse.(Float64, split(_dict["DEMAND_SECTION"]))
@@ -39,11 +65,9 @@ function _generateCVRP(raw::AbstractString)
         demands_data = reshape(demand_data, (n_r, dimension))'[:, 2:end] 
         demands = dropdims(demands_data, dims=2)
         demands = [demands; demands[depot]]
+        @assert length(demands) == dimension + 1
     end    
 
-    @assert size(weights) == (dimension + 1, dimension +1)
-    @assert size(coordinates) == (dimension + 1, 2)
-    @assert length(demands) == dimension + 1
 
     return CVRP(
         _dict["NAME"],
@@ -54,41 +78,40 @@ function _generateCVRP(raw::AbstractString)
         coordinates,
         demands,
         depot,
-        dummy
+        dummy,
+        customers
     )
 end
 
 
-function keyextract(raw::T, ks::Array{T}) where T<:AbstractString
-    pq = PriorityQueue{T, Tuple{Integer, Integer}}()
-    vals = Dict{T, T}()
-    for k in ks
-        idx = findfirst(k, raw)
-        idx != nothing && enqueue!(pq, k, extrema(idx))
-    end
-    while length(pq) > 1
-        s_key, s_pts = peek(pq)
-        dequeue!(pq)
-        f_key, f_pts = peek(pq)
-        rng = (s_pts[2]+1):(f_pts[1]-1)
-        vals[s_key] = strip(replace(raw[rng], ":" => ""))
-    end
-    return vals
-end
 
 
-function calc_weights(key::AbstractString, data::Matrix)
+function explicit_weights(key::AbstractString, data::Vector{Float64})
+    @show key 
+    @show data 
+
     w = @match key begin
-        "EUC_2D"  => euclidian(data[:,1], data[:,2])
-        "MAN_2D"  => manhattan(data[:,1], data[:,2])
-        "MAX_2D"  => max_norm(data[:,1], data[:,2])
-        "GEO"     => geo(data[:,1], data[:,2])
-        "ATT"     => att_euclidian(data[:,1], data[:,2])
-        "CEIL_2D" => ceil_euclidian(data[:,1], data[:,2])
-        _         => error("Distance function type $key is not supported.")
+      "UPPER_DIAG_ROW"  => TSPLIB.vec2UDTbyRow(data)
+      "LOWER_DIAG_ROW"  => TSPLIB.vec2LDTbyRow(data)
+      "UPPER_DIAG_COL"  => TSPLIB.vec2UDTbyCol(data)
+      "LOWER_DIAG_COL"  => TSPLIB.vec2LDTbyCol(data)
+      "UPPER_ROW"       => TSPLIB.vec2UTbyRow(data)
+      "LOWER_ROW"       => vec2LTbyRow(data)
+      "FULL_MATRIX"     => TSPLIB.vec2FMbyRow(data)
     end
-
+    if !in(key, ["FULL_MATRIX"])
+      w .+= w'
+    end
     return w
 end
 
+function vec2LTbyRow(v::AbstractVector{T}, z::T=zero(T)) where T
+    n = length(v)
+    s = round(Integer,((sqrt(8n+1)-1)/2)+1)
+    (s*(s+1)/2)-s == n || error("vec2LTbyRow: length of vector is not triangular")
+    k=0
+    [i<j ? (k+=1; v[k]) : z for i=1:s, j=1:s]'
+end
 
+  
+  

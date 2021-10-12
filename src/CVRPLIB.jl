@@ -6,6 +6,7 @@ module CVRPLIB
 using DataStructures
 using Match
 using Downloads
+import TSPLIB
 
     mutable struct CVRP
         name        :: AbstractString
@@ -17,6 +18,7 @@ using Downloads
         demand      :: Vector
         depot       :: Integer
         dummy       :: Integer
+        customers   :: Vector
     end
 
     const cvrp_keys = [
@@ -43,7 +45,6 @@ using Downloads
     ]
 
 
-    include("distances.jl")
     include("reader.jl")
     include("download.jl")
 
