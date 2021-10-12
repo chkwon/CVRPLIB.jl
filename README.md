@@ -1,6 +1,6 @@
-# CVRPLIB
+# CVRPLIB.jl
 
-This downloads and reads data files from [CVRPLIB](http://vrp.atd-lab.inf.puc-rio.br/index.php/en/). 
+This downloads and reads data files from [CVRPLIB](http://vrp.atd-lab.inf.puc-rio.br/index.php/en/).  This package is inspired by and built upon [TSPLIB.jl](https://github.com/matago/TSPLIB.jl)
 
 ## Installation 
 
@@ -18,7 +18,7 @@ It returns three values. `vrp_file` is the path for the downloaded `.vrp` file a
 `cvrp` is the main data of the following struct:
 
 ```julia
-struct CVRP
+mutable struct CVRP
     name        :: AbstractString
     dimension   :: Integer
     weight_type :: AbstractString
