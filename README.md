@@ -22,22 +22,24 @@ It returns three values. `vrp_file` is the path for the downloaded `.vrp` file a
 `cvrp` is the main data of the following struct:
 
 ```julia
-mutable struct CVRP
+struct CVRP
     name        :: AbstractString
-    dimension   :: Integer
+    dimension   :: Int
     weight_type :: AbstractString
-    weights     :: Matrix
-    capacity    :: Integer 
-    coordinates :: Matrix    
-    demand      :: Vector
-    depot       :: Integer
-    dummy       :: Integer
+    weights     :: AbstractMatrix{Int}
+    capacity    :: Int 
+    coordinates :: AbstractMatrix{Float64}    
+    demand      :: Vector{Int}
+    depot       :: Int
+    dummy       :: Int
+    customers   :: Vector{Int}
 end
 ```
 
-`dimension` is the number of nodes in the data, including the depot. 
-The index `depot` is usually `1`, and this package automatically adds a dummy depot node to the end of the list, i.e., `dimension + 1`. 
-Therefore, we have `size(weights) = (dimension + 1, dimension +1)` and `size(coordinates) = (dimension + 1, 2)`.
+Note:
+- `weights`, `capacity`, and `demand` are integer-valued.
+- `dimension` is the number of nodes in the data, including the depot. 
+- The index `depot` is usually `1`, and this package automatically adds a dummy depot node to the end of the list, i.e., `dimension + 1`. Therefore, we have `size(weights) = (dimension + 1, dimension +1)` and `size(coordinates) = (dimension + 1, 2)`.
 
 ```julia
     @assert size(weights) == (dimension + 1, dimension +1)
