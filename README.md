@@ -1,5 +1,9 @@
 # CVRPLIB.jl
 
+[![Build Status](https://github.com/chkwon/CVRPLIB.jl/workflows/CI/badge.svg?branch=master)](https://github.com/chkwon/CVRPLIB.jl/actions?query=workflow%3ACI)
+[![codecov](https://codecov.io/gh/chkwon/CVRPLIB.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/chkwon/CVRPLIB.jl)
+
+
 This downloads and reads data files from [CVRPLIB](http://vrp.atd-lab.inf.puc-rio.br/index.php/en/).  This package is inspired by and built upon [TSPLIB.jl](https://github.com/matago/TSPLIB.jl)
 
 ## Installation 
