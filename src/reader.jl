@@ -29,7 +29,7 @@ function _generateCVRP(raw::AbstractString)
     customers = setdiff(1:(dimension+1), [depot, dummy])
     
     if weight_type == "EXPLICIT" && haskey(_dict, "EDGE_WEIGHT_SECTION")
-        explicits = parse.(Float64, split(_dict["EDGE_WEIGHT_SECTION"]))
+        explicits = parse.(Int, split(_dict["EDGE_WEIGHT_SECTION"]))
         weights = explicit_weights(_dict["EDGE_WEIGHT_FORMAT"], explicits)
         #Push display data to nodes if possible
         if haskey(_dict,"DISPLAY_DATA_SECTION")
@@ -54,14 +54,14 @@ function _generateCVRP(raw::AbstractString)
         coordinates = reshape(coords, (n_r, dimension))'[:, 2:end]
         # copy depot and create a dummy
         coordinates = [coordinates; coordinates[depot, :]']
-        weights = TSPLIB.calc_weights(_dict["EDGE_WEIGHT_TYPE"], coordinates)    
+        weights = Int.(TSPLIB.calc_weights(_dict["EDGE_WEIGHT_TYPE"], coordinates))
         @assert size(coordinates) == (dimension + 1, 2)
     end
 
     @assert size(weights) == (dimension + 1, dimension +1)
 
     if haskey(_dict, "DEMAND_SECTION")
-        demand_data = parse.(Float64, split(_dict["DEMAND_SECTION"]))
+        demand_data = parse.(Int, split(_dict["DEMAND_SECTION"]))
         n_r = convert(Integer, length(demand_data) / dimension)
         demands_data = reshape(demand_data, (n_r, dimension))'[:, 2:end] 
         demands = dropdims(demands_data, dims=2)
@@ -87,7 +87,7 @@ end
 
 
 
-function explicit_weights(key::AbstractString, data::Vector{Float64})
+function explicit_weights(key::AbstractString, data::Vector{Int})
     w = @match key begin
       "UPPER_DIAG_ROW"  => TSPLIB.vec2UDTbyRow(data)
       "LOWER_DIAG_ROW"  => TSPLIB.vec2LDTbyRow(data)

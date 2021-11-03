@@ -8,17 +8,17 @@ using Match
 using Downloads
 import TSPLIB
 
-    mutable struct CVRP
+    struct CVRP
         name        :: AbstractString
-        dimension   :: Integer
+        dimension   :: Int
         weight_type :: AbstractString
-        weights     :: Matrix
-        capacity    :: Integer 
-        coordinates :: Matrix    
-        demand      :: Vector
-        depot       :: Integer
-        dummy       :: Integer
-        customers   :: Vector
+        weights     :: AbstractMatrix{Int}
+        capacity    :: Int 
+        coordinates :: AbstractMatrix{Float64}    
+        demand      :: Vector{Int}
+        depot       :: Int
+        dummy       :: Int
+        customers   :: Vector{Int}
     end
 
     const cvrp_keys = [
