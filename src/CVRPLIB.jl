@@ -7,6 +7,7 @@ using DataStructures
 using Match
 using Downloads
 using Random
+using DelimitedFiles
 import TSPLIB
 
     struct CVRP

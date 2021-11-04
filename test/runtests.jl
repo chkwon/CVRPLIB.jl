@@ -27,13 +27,19 @@ using Test
         @test_broken readCVRP(inst)
     end
 
-
+    write_instances = [
+        "P-n16-k8", "E-n13-k4"
+    ]
     @testset "write_CVRP" begin 
-        @info "Testing write_CVRP"
-        cvrp, vrp_file, sol_file = readCVRP("P-n16-k8")
-        name, cvrp_file = write_cvrp(cvrp, dist=cvrp.weight_type)
-        @test isfile(cvrp_file)
-        delete_cvrp(cvrp_file)
-        @test !isfile(cvrp_file)
+        for inst in write_instances
+            @testset "$inst" begin
+                @info "Testing write_CVRP: $inst..."
+                cvrp, vrp_file, sol_file = readCVRP(inst)
+                name, cvrp_file = write_cvrp(cvrp)
+                @test isfile(cvrp_file)
+                delete_cvrp(cvrp_file)
+                @test !isfile(cvrp_file)
+            end
+        end
     end
 end
