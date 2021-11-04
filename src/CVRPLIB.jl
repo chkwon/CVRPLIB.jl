@@ -6,6 +6,7 @@ module CVRPLIB
 using DataStructures
 using Match
 using Downloads
+using Random
 import TSPLIB
 
     struct CVRP
@@ -46,10 +47,11 @@ import TSPLIB
 
 
     include("reader.jl")
+    include("writer.jl")
     include("download.jl")
 
 
-    export readCVRP, readCVRPpath, CVRP
+    export readCVRP, readCVRPpath, CVRP, write_cvrp, delete_cvrp
 
 end
 

@@ -14,6 +14,8 @@ using Test
             @info "Testing $inst..."
             @test isfile(vrp_file)
             @test isfile(sol_file)
+            cvrp2 = readCVRPpath(vrp_file)
+            @test size(cvrp2.weights) == size(cvrp.weights)
         end
     end
 
@@ -21,7 +23,17 @@ using Test
         "Daejeon", "E-n999-k999"
     ]
     for inst in wrong_instances
+        @info "Testing broken: $inst"
         @test_broken readCVRP(inst)
     end
 
+
+    @testset "write_CVRP" begin 
+        @info "Testing write_CVRP"
+        cvrp, vrp_file, sol_file = readCVRP("P-n16-k8")
+        name, cvrp_file = write_cvrp(cvrp, dist=cvrp.weight_type)
+        @test isfile(cvrp_file)
+        delete_cvrp(cvrp_file)
+        @test !isfile(cvrp_file)
+    end
 end
