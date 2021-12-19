@@ -9,17 +9,16 @@ const XXL_names = [
 ]
 
 function download_cvrp(name::String)
-    dir_name = "XXL"
-    for d in dir_names
-        if startswith(name, d)
-            dir_name = d
-            break
-        end
-    end
-    if dir_name == "XXL"
-        exist = [startswith(name, xxl) for xxl in XXL_names]
-        if ! any(exist) 
-            error("No such data name exists in the XXL dataset of CVRPLIB: $name")
+    is_xxl = any([startswith(name, xxl) for xxl in XXL_names])
+
+    if is_xxl
+        dir_name = "XXL"
+    else 
+        for d in dir_names
+            if startswith(name, d)
+                dir_name = d
+                break
+            end
         end
     end
 

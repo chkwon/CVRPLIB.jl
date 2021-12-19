@@ -6,8 +6,9 @@ module CVRPLIB
 using DataStructures
 using Match
 using Downloads
+import TSPLIB
 
-    struct CVRP
+    mutable struct CVRP
         name        :: AbstractString
         dimension   :: Integer
         weight_type :: AbstractString
@@ -17,6 +18,7 @@ using Downloads
         demand      :: Vector
         depot       :: Integer
         dummy       :: Integer
+        customers   :: Vector
     end
 
     const cvrp_keys = [
@@ -28,6 +30,7 @@ using Downloads
         "EDGE_WEIGHT_FORMAT",
         "EDGE_DATA_FORMAT",
         "CAPACITY",
+        "DISTANCE",
         "NODE_COORD_TYPE",
         "DISPLAY_DATA_TYPE",
         "NODE_COORD_SECTION",
@@ -42,7 +45,6 @@ using Downloads
     ]
 
 
-    include("distances.jl")
     include("reader.jl")
     include("download.jl")
 
