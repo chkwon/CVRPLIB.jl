@@ -16,13 +16,13 @@ This downloads and reads data files from [CVRPLIB](http://vrp.atd-lab.inf.puc-ri
 
 For example, to download the `X-n242-k48` instance:
 ```julia
-cvrp, vrp_file, sol_file = readCVRP("X-n242-k48")
+cvrp, vrp_file, sol_file = readCVRPLIB("X-n242-k48")
 ```
 It returns three values. `vrp_file` is the path for the downloaded `.vrp` file and `sol_file` is the path for the `.sol` file. 
 `cvrp` is the main data of the following struct:
 
 ```julia
-struct CVRP
+mutable struct CVRP
     name        :: AbstractString
     dimension   :: Int
     weight_type :: AbstractString
@@ -38,11 +38,14 @@ end
 Note:
 - `weights`, `capacity`, and `demand` are integer valued.
 - `dimension` is the number of nodes in the data, including the depot. 
-- The index `depot` is usually `1`, and this package automatically adds a dummy depot node to the end of the list, i.e., `dimension + 1`. 
-- Therefore, we have `size(weights) = (dimension + 1, dimension +1)` and `size(coordinates) = (dimension + 1, 2)`.
+- The index `depot` is usually `1`.
 
+
+If `add_dummy=true` is provided, this package automatically adds a dummy depot node to the end of the list, i.e., `dimension + 1`. 
 ```julia
-    @assert size(weights) == (dimension + 1, dimension +1)
-    @assert size(coordinates) == (dimension + 1, 2)
-    @assert length(demands) == dimension + 1
+    cvrp, vrp_file, sol_file = readCVRPLIB("X-n242-k48", add_dummy=true)
+
+    @assert size(cvrp.weights) == (cvrp.dimension + 1, cvrp.dimension +1)
+    @assert size(cvrp.coordinates) == (cvrp.dimension + 1, 2)
+    @assert length(cvrp.demands) == cvrp.dimension + 1
 ```

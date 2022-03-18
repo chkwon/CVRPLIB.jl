@@ -10,7 +10,7 @@ using Random
 using DelimitedFiles
 import TSPLIB
 
-    struct CVRP
+    mutable struct CVRP
         name        :: AbstractString
         dimension   :: Int
         weight_type :: AbstractString
@@ -52,7 +52,7 @@ import TSPLIB
     include("download.jl")
 
 
-    export readCVRP, readCVRPpath, CVRP, write_cvrp, delete_cvrp
+    export readCVRP, readCVRPLIB, CVRP, write_cvrp, delete_cvrp
 
 end
 
