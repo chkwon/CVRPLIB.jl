@@ -1,17 +1,17 @@
 # copied from https://github.com/matago/TSPLIB.jl
 
-function readCVRP(name::AbstractString)
+function readCVRPLIB(name::AbstractString; add_dummy=false)
     vrp, sol = download_cvrp(name)
     raw = read(vrp, String)
-    return _generateCVRP(raw), vrp, sol
+    return _generateCVRP(raw; add_dummy=add_dummy), vrp, sol
 end 
 
-function readCVRPpath(path::AbstractString)
+function readCVRP(path::AbstractString; add_dummy=false)
     raw = read(path, String)
-    return _generateCVRP(raw)
+    return _generateCVRP(raw; add_dummy=add_dummy)
 end 
 
-function _generateCVRP(raw::AbstractString)
+function _generateCVRP(raw::AbstractString; add_dummy=false)
     _dict = TSPLIB.keyextract(raw, cvrp_keys)
 
     name = _dict["NAME"]
@@ -25,7 +25,10 @@ function _generateCVRP(raw::AbstractString)
         @warn "$name does not have 'DEPOT_SECTION'. Depot is set to node 1."
     end
     capacity = parse.(Int, _dict["CAPACITY"])
-    dummy = dimension + 1
+
+    check_dimension = add_dummy ? dimension + 1 : dimension
+    dummy = add_dummy ? dimension + 1 : depot
+
     customers = setdiff(1:(dimension+1), [depot, dummy])
     
     if weight_type == "EXPLICIT" && haskey(_dict, "EDGE_WEIGHT_SECTION")
@@ -42,8 +45,10 @@ function _generateCVRP(raw::AbstractString)
         end
 
         # Expanding weights for dummy depot 
-        weights = [weights weights[:, depot]]
-        weights = [weights; weights[depot, :]']
+        if add_dummy
+            weights = [weights weights[:, depot]]
+            weights = [weights; weights[depot, :]']
+        end
 
         # No coordinate information 
         coordinates = Matrix{Float64}(undef, 0, 0)
@@ -52,21 +57,30 @@ function _generateCVRP(raw::AbstractString)
         coords = parse.(Float64, split(_dict["NODE_COORD_SECTION"]))
         n_r = convert(Integer, length(coords) / dimension)
         coordinates = reshape(coords, (n_r, dimension))'[:, 2:end]
+        
         # copy depot and create a dummy
-        coordinates = [coordinates; coordinates[depot, :]']
+        if add_dummy
+            coordinates = [coordinates; coordinates[depot, :]']
+        end
+
         weights = Int.(TSPLIB.calc_weights(_dict["EDGE_WEIGHT_TYPE"], coordinates))
-        @assert size(coordinates) == (dimension + 1, 2)
+        @assert size(coordinates) == (check_dimension, 2)
     end
 
-    @assert size(weights) == (dimension + 1, dimension +1)
+    @assert size(weights) == (check_dimension, check_dimension)
 
     if haskey(_dict, "DEMAND_SECTION")
         demand_data = parse.(Int, split(_dict["DEMAND_SECTION"]))
         n_r = convert(Integer, length(demand_data) / dimension)
         demands_data = reshape(demand_data, (n_r, dimension))'[:, 2:end] 
         demands = dropdims(demands_data, dims=2)
-        demands = [demands; demands[depot]]
-        @assert length(demands) == dimension + 1
+
+        # copy depot and create a dummy
+        if add_dummy
+            demands = [demands; demands[depot]]
+        end
+        
+        @assert length(demands) == check_dimension
     end    
 
 
