@@ -41,11 +41,11 @@ Note:
 - The index `depot` is usually `1`.
 
 
-If `add_dummy=true` is provided, this package automatically adds a dummy depot node to the end of the list, i.e., `dimension + 1`. 
+<!-- If `add_dummy=true` is provided, this package automatically adds a dummy depot node to the end of the list, i.e., `dimension + 1`. 
 ```julia
     cvrp, vrp_file, sol_file = readCVRPLIB("X-n242-k48", add_dummy=true)
 
     @assert size(cvrp.weights) == (cvrp.dimension + 1, cvrp.dimension +1)
     @assert size(cvrp.coordinates) == (cvrp.dimension + 1, 2)
     @assert length(cvrp.demands) == cvrp.dimension + 1
-```
+``` -->
