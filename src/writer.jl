@@ -12,7 +12,11 @@ function write_cvrp(cvrp::CVRPLIB.CVRP)
 
     filepath = joinpath(pwd(), name * ".vrp")
 
-    org_weights = cvrp.weights[1:end-1, 1:end-1]
+    if cvrp.dummy > cvrp.depot # dummy is added
+        org_weights = cvrp.weights[1:end-1, 1:end-1]
+    else
+        org_weights = cvrp.weights
+    end
 
     open(filepath, "w") do io
         write(io, "NAME : $(name)\n")
@@ -21,6 +25,13 @@ function write_cvrp(cvrp::CVRPLIB.CVRP)
         write(io, "DIMENSION : $(cvrp.dimension)\n")
         write(io, "EDGE_WEIGHT_TYPE : $(cvrp.weight_type)\n")
         write(io, "CAPACITY : $(cvrp.capacity)\n")
+        if cvrp.distance < Inf 
+            write(io, "DISTANCE : $(cvrp.distance)\n");
+        end
+        if cvrp.service_time > 0.0  
+            write(io, "SERVICE_TIME : $(cvrp.service_time)\n");
+        end
+
         if cvrp.weight_type == "EXPLICIT"
             @assert length(cvrp.coordinates) == 0
 

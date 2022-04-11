@@ -11,16 +11,18 @@ using DelimitedFiles
 import TSPLIB
 
     mutable struct CVRP
-        name        :: AbstractString
-        dimension   :: Int
-        weight_type :: AbstractString
-        weights     :: AbstractMatrix{Int}
-        capacity    :: Int 
-        coordinates :: AbstractMatrix{Float64}    
-        demand      :: Vector{Int}
-        depot       :: Int
-        dummy       :: Int
-        customers   :: Vector{Int}
+        name            :: String
+        dimension       :: Int
+        weight_type     :: String
+        weights         :: Matrix{Int}
+        capacity        :: Int 
+        distance        :: Float64
+        service_time    :: Float64
+        coordinates     :: Matrix{Float64}    
+        demand          :: Vector{Int}
+        depot           :: Int
+        dummy           :: Int
+        customers       :: Vector{Int}
     end
 
     const cvrp_keys = [
@@ -33,6 +35,7 @@ import TSPLIB
         "EDGE_DATA_FORMAT",
         "CAPACITY",
         "DISTANCE",
+        "SERVICE_TIME",
         "NODE_COORD_TYPE",
         "DISPLAY_DATA_TYPE",
         "NODE_COORD_SECTION",

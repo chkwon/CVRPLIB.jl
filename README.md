@@ -22,21 +22,25 @@ It returns three values. `vrp_file` is the path for the downloaded `.vrp` file a
 `cvrp` is the main data of the following struct:
 
 ```julia
-mutable struct CVRP
-    name        :: AbstractString
-    dimension   :: Int
-    weight_type :: AbstractString
-    weights     :: AbstractMatrix{Int}
-    capacity    :: Int 
-    coordinates :: AbstractMatrix{Float64}    
-    demand      :: Vector{Int}
-    depot       :: Int
-    dummy       :: Int
-    customers   :: Vector{Int}
-end
+    mutable struct CVRP
+        name            :: String
+        dimension       :: Int
+        weight_type     :: String
+        weights         :: Matrix{Int}
+        capacity        :: Int 
+        distance        :: Float64
+        service_time    :: Float64
+        coordinates     :: Matrix{Float64}    
+        demand          :: Vector{Int}
+        depot           :: Int
+        dummy           :: Int
+        customers       :: Vector{Int}
+    end
 ```
 Note:
 - `weights`, `capacity`, and `demand` are integer valued.
+- `distance` is the distance limit for each route. If no duration constraint, it is set to `Inf`.
+- `service_time` is the time for service at each customer node. It is set to `0.0`, when the service time is not presented.
 - `dimension` is the number of nodes in the data, including the depot. 
 - The index `depot` is usually `1`.
 

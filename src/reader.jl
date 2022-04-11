@@ -1,17 +1,17 @@
 # copied from https://github.com/matago/TSPLIB.jl
 
-function readCVRPLIB(name::AbstractString; add_dummy=false)
+function readCVRPLIB(name::String; add_dummy=false)
     vrp, sol = download_cvrp(name)
     raw = read(vrp, String)
     return _generateCVRP(raw; add_dummy=add_dummy), vrp, sol
 end 
 
-function readCVRP(path::AbstractString; add_dummy=false)
+function readCVRP(path::String; add_dummy=false)
     raw = read(path, String)
     return _generateCVRP(raw; add_dummy=add_dummy)
 end 
 
-function _generateCVRP(raw::AbstractString; add_dummy=false)
+function _generateCVRP(raw::String; add_dummy=false)
     _dict = TSPLIB.keyextract(raw, cvrp_keys)
 
     name = _dict["NAME"]
@@ -32,13 +32,13 @@ function _generateCVRP(raw::AbstractString; add_dummy=false)
     customers = setdiff(1:(dimension+1), [depot, dummy])
     
     if weight_type == "EXPLICIT" && haskey(_dict, "EDGE_WEIGHT_SECTION")
-        explicits = parse.(Int, split(_dict["EDGE_WEIGHT_SECTION"]))
-        weights = explicit_weights(_dict["EDGE_WEIGHT_FORMAT"], explicits)
+        explicits = parse.(Float64, split(_dict["EDGE_WEIGHT_SECTION"]))
+        weights = TSPLIB.explicit_weights(_dict["EDGE_WEIGHT_FORMAT"], explicits)
         #Push display data to nodes if possible
         if haskey(_dict,"DISPLAY_DATA_SECTION")
             coords = parse.(Float64, split(_dict["DISPLAY_DATA_SECTION"]))
-            n_r = convert(Integer,length(coords)/dimension)
-            nodes = reshape(coords,(n_r,dimension))'[:,2:end]
+            n_r = convert(Integer, length(coords) / dimension)
+            nodes = reshape(coords, (n_r, dimension))'[:,2:end]
             dxp = true
         else
             nodes = zeros(dimension, 2)
@@ -49,7 +49,6 @@ function _generateCVRP(raw::AbstractString; add_dummy=false)
             weights = [weights weights[:, depot]]
             weights = [weights; weights[depot, :]']
         end
-
         # No coordinate information 
         coordinates = Matrix{Float64}(undef, 0, 0)
 
@@ -68,6 +67,17 @@ function _generateCVRP(raw::AbstractString; add_dummy=false)
     end
 
     @assert size(weights) == (check_dimension, check_dimension)
+
+    distance_limit = Inf
+    if haskey(_dict, "DISTANCE")
+        distance_limit = parse(Float64, _dict["DISTANCE"])
+    end
+
+    service_time = 0.0
+    if haskey(_dict, "SERVICE_TIME")
+        service_time = parse(Float64, _dict["SERVICE_TIME"])
+    end
+
 
     if haskey(_dict, "DEMAND_SECTION")
         demand_data = parse.(Int, split(_dict["DEMAND_SECTION"]))
@@ -90,6 +100,8 @@ function _generateCVRP(raw::AbstractString; add_dummy=false)
         _dict["EDGE_WEIGHT_TYPE"],
         weights,
         capacity,
+        distance_limit,
+        service_time,
         coordinates,
         demands,
         depot,
@@ -97,33 +109,3 @@ function _generateCVRP(raw::AbstractString; add_dummy=false)
         customers
     )
 end
-
-
-
-
-function explicit_weights(key::AbstractString, data::Vector{Int})
-    w = @match key begin
-      "UPPER_DIAG_ROW"  => TSPLIB.vec2UDTbyRow(data)
-      "LOWER_DIAG_ROW"  => TSPLIB.vec2LDTbyRow(data)
-      "UPPER_DIAG_COL"  => TSPLIB.vec2UDTbyCol(data)
-      "LOWER_DIAG_COL"  => TSPLIB.vec2LDTbyCol(data)
-      "UPPER_ROW"       => TSPLIB.vec2UTbyRow(data)
-      "LOWER_ROW"       => vec2LTbyRow(data)
-      "FULL_MATRIX"     => TSPLIB.vec2FMbyRow(data)
-    end
-    if !in(key, ["FULL_MATRIX"])
-      w .+= w'
-    end
-    return w
-end
-
-function vec2LTbyRow(v::AbstractVector{T}, z::T=zero(T)) where T
-    n = length(v)
-    s = round(Integer,((sqrt(8n+1)-1)/2)+1)
-    (s*(s+1)/2)-s == n || error("vec2LTbyRow: length of vector is not triangular")
-    k=0
-    [i<j ? (k+=1; v[k]) : z for i=1:s, j=1:s]'
-end
-
-  
-  
