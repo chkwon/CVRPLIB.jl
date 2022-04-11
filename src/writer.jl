@@ -21,6 +21,13 @@ function write_cvrp(cvrp::CVRPLIB.CVRP)
         write(io, "DIMENSION : $(cvrp.dimension)\n")
         write(io, "EDGE_WEIGHT_TYPE : $(cvrp.weight_type)\n")
         write(io, "CAPACITY : $(cvrp.capacity)\n")
+        if cvrp.distance < Inf 
+            write(io, "DISTANCE : $(cvrp.distance)\n");
+        end
+        if cvrp.service_time > 0.0  
+            write(io, "SERVICE_TIME : $(cvrp.service_time)\n");
+        end
+
         if cvrp.weight_type == "EXPLICIT"
             @assert length(cvrp.coordinates) == 0
 

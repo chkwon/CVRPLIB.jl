@@ -20,6 +20,17 @@ using Test
         end
     end
 
+    @testset "duration constraints" begin
+        cvrp, _, _ = readCVRPLIB("CMT6")
+        @test cvrp.distance == 200.0
+        @test cvrp.service_time == 10.0
+
+        cvrp, _, _ = readCVRPLIB("CMT7")
+        @test cvrp.distance == 160.0
+        @test cvrp.service_time == 10.0
+
+    end
+
 
     @testset "add_dummy" begin 
         n = 50

@@ -69,6 +69,17 @@ function _generateCVRP(raw::AbstractString; add_dummy=false)
 
     @assert size(weights) == (check_dimension, check_dimension)
 
+    distance_limit = Inf
+    if haskey(_dict, "DISTANCE")
+        distance_limit = parse(Float64, _dict["DISTANCE"])
+    end
+
+    service_time = 0.0
+    if haskey(_dict, "SERVICE_TIME")
+        service_time = parse(Float64, _dict["SERVICE_TIME"])
+    end
+
+
     if haskey(_dict, "DEMAND_SECTION")
         demand_data = parse.(Int, split(_dict["DEMAND_SECTION"]))
         n_r = convert(Integer, length(demand_data) / dimension)
@@ -90,6 +101,8 @@ function _generateCVRP(raw::AbstractString; add_dummy=false)
         _dict["EDGE_WEIGHT_TYPE"],
         weights,
         capacity,
+        distance_limit,
+        service_time,
         coordinates,
         demands,
         depot,
