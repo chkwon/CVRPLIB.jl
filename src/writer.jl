@@ -12,7 +12,11 @@ function write_cvrp(cvrp::CVRPLIB.CVRP)
 
     filepath = joinpath(pwd(), name * ".vrp")
 
-    org_weights = cvrp.weights[1:end-1, 1:end-1]
+    if cvrp.dummy > cvrp.depot # dummy is added
+        org_weights = cvrp.weights[1:end-1, 1:end-1]
+    else
+        org_weights = cvrp.weights
+    end
 
     open(filepath, "w") do io
         write(io, "NAME : $(name)\n")
