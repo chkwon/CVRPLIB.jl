@@ -1,7 +1,7 @@
 name = "CVRPLIB"
 uuid = "6232a4dd-6c48-4603-a2a7-0046d401e3d1"
 authors = ["Changhyun Kwon <chkwon@gmail.com> and contributors"]
-version = "0.2.0"
+version = "0.3.0"
 
 [deps]
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
