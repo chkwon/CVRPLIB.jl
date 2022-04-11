@@ -94,4 +94,22 @@ using Test
             end
         end
     end
+    @testset "write_CVRP: add_dummy" begin 
+        for inst in write_instances
+            @testset "$inst" begin
+                cvrp, vrp_file, sol_file = readCVRPLIB(inst, add_dummy=true)
+                name, cvrp_file = write_cvrp(cvrp)
+                @test isfile(cvrp_file)
+
+                cvrp2 = readCVRP(cvrp_file)
+                @test cvrp.dimension == cvrp2.dimension
+                @test cvrp.capacity == cvrp2.capacity 
+                @test cvrp.distance == cvrp2.distance
+                @test cvrp.service_time == cvrp2.service_time
+
+                delete_cvrp(cvrp_file)
+                @test !isfile(cvrp_file)
+            end
+        end
+    end    
 end
