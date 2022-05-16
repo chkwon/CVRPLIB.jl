@@ -6,7 +6,7 @@ using Test
     instances = [
         "E-n13-k4", "E-n101-k14", "X-n242-k48", "A-n80-k10", "F-n135-k7", 
         "M-n200-k17", "P-n50-k8", "CMT11", "tai150b", "Golden_10", 
-        "Li_28", "X-n157-k13"
+        "Li_28", "X-n157-k13", "X-n502-k39"
         # , "Brussels2", "Ghent2" (out of memory in CI test for Windows)
     ]
     for inst in instances
