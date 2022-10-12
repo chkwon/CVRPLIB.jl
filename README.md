@@ -53,3 +53,13 @@ Note:
     @assert size(cvrp.coordinates) == (cvrp.dimension + 1, 2)
     @assert length(cvrp.demands) == cvrp.dimension + 1
 ``` -->
+
+
+# Related Data Packages
+- [KnapsackLib.jl](https://github.com/rafaelmartinelli/Knapsacks.jl): Knapsack algorithms in Julia
+- [FacilityLocationProblems.jl](https://github.com/rafaelmartinelli/FacilityLocationProblems.jl): Facility Location Problems Lib
+- [AssignmentProblems.jl](https://github.com/rafaelmartinelli/AssignmentProblems.jl): Assignment Problems Lib
+- [BPPLib.jl](https://github.com/rafaelmartinelli/BPPLib.jl): Bin Packing and Cutting Stock Problems Lib
+- [CARPData.jl](https://github.com/rafaelmartinelli/CARPData.jl): Capacitated Arc Routing Problem Lib
+- [MDVSP.jl](https://github.com/rafaelmartinelli/MDVSP.jl): Multi-Depot Vehicle Scheduling Problem Lib
+- [TSPLIB.jl](https://github.com/matago/TSPLIB.jl): Traveling Salesman Problem Lib
