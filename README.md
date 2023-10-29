@@ -9,7 +9,7 @@ This downloads and reads data files from [CVRPLIB](http://vrp.atd-lab.inf.puc-ri
 ## Installation 
 
 ```julia
-] add https://github.com/chkwon/CVRPLIB.jl
+] add CVRPLIB
 ```
 
 ## Usage
